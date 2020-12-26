@@ -119,6 +119,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'core.urls'
+LOGOUT_REDIRECT_URL = '/'
 
 TEMPLATES = [
     {
