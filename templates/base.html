@@ -1,0 +1,44 @@
+{% load static i18n admin_urls %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+  <title>{% block title %}wozniak-dev{% endblock title %}</title>
+</head>
+<body class="bg-gray-100">
+  <div id="app">
+    {% block content %}{% endblock content %}
+  </div>
+<script>
+  const messagesArr = [
+    {% for message in messages %}{
+    tag:"{{ message.tags }}",
+        msg: "{{ message }}" },
+  {% endfor %}
+  ];
+  messagesArr.forEach(msg => {
+    if (msg.tag === "info") {
+      Swal.fire({
+        position: 'top-end',
+        icon: 'success',
+        title: msg.msg,
+        showConfirmButton: false,
+        timer: 2500
+      })
+    } else {
+      Swal.fire({
+        position: 'top-end',
+        icon: 'error',
+        title: msg.msg,
+        showConfirmButton: false,
+        timer: 2000
+      })
+    }
+  })
+</script>
+{% block extrascripts %}{% endblock extrascripts %}
+</body>
+</html>

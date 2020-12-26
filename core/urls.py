@@ -7,8 +7,11 @@ from rest_framework_simplejwt.views import (
 from rest_framework.documentation import include_docs_urls
 from rest_framework.schemas import get_schema_view
 
+from users import views
+
 
 urlpatterns = [
+    path('', views.LoginView.as_view(), name='login'),
     path('admin/', admin.site.urls),
     path('api/user/', include('users.urls', namespace='users')),
     path('api/user/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
