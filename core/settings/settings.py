@@ -44,9 +44,12 @@ AUTH_USER_MODEL = 'users.User'
 ACCOUNT_UNIQUE_EMAIL = True
 
 CORS_ORIGIN_WHITELIST = [
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-    "http://0.0.0.0:8000",
+    "http://*",
+    "http://*:3000",
+    "https://*:3000",
+    "https://*",
+    "http://localhost:3000",
+    "https://localhost:3000",
 ]
 
 CORS_ALLOW_METHODS = [
