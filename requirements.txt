@@ -9,6 +9,7 @@ coverage==5.3.1
 Django==3.1.4
 django-cors-headers==3.6.0
 django-environ==0.4.5
+django-rest-passwordreset==1.1.0
 django-storages==1.11.1
 djangorestframework==3.12.2
 djangorestframework-simplejwt==4.6.0

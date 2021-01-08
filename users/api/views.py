@@ -1,11 +1,37 @@
+from django.shortcuts import get_object_or_404
+
 from rest_framework import status
+from rest_framework import generics
+from rest_framework import mixins
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import permissions
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import RegisterUserSerializer
+from .serializers import RegisterUserSerializer, UserSerializer
+from users.models import User
+
+
+class ManageUserView(generics.RetrieveUpdateAPIView):
+    serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_object(self) -> User:
+        return self.request.user
+
+
+class RetrieveUserProfileView(mixins.RetrieveModelMixin, generics.GenericAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def get_object(self) -> User:
+        email = self.kwargs.get('email')
+        return get_object_or_404(User, email=email)
 
 
 class CustomUserCreateView(APIView):
