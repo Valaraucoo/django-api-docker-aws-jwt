@@ -6,13 +6,13 @@ from users.models import User
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm):
         model = User
-        fields = ('email', 'first_name', 'last_name', 'phone', 'password',)
+        fields = ('email', 'first_name', 'last_name', 'phone', 'address', 'password',)
 
 
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = User
-        fields = ('email', 'first_name', 'last_name', 'phone',)
+        fields = ('email', 'first_name', 'last_name', 'phone', 'address')
 
 
 tailwind_form = 'appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 ' \
