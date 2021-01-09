@@ -17,8 +17,7 @@ class NoteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Note
-        fields = ('id', 'title', 'content',
-                  'categories', 'author', 'likes_count')
+        fields = ('id', 'title', 'content', 'categories', 'author', 'likes_count', 'created_at', 'updated_at')
 
 
 class NoteSerializerShort(serializers.ModelSerializer):
@@ -29,5 +28,4 @@ class NoteSerializerShort(serializers.ModelSerializer):
 
     class Meta:
         model = models.Note
-        fields = ('id', 'title', 'content',
-                  'categories', 'author', 'likes_count')
+        fields = ('id', 'title', 'content', 'categories', 'author', 'likes_count', 'created_at', 'updated_at')

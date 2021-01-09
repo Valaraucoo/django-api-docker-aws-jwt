@@ -25,6 +25,8 @@ class User(auth_models.AbstractUser):
 
     email = models.EmailField(unique=True, verbose_name=_('Email address'))
     phone = models.CharField(max_length=9, blank=True, verbose_name=_('Phone number'))
+    address = models.CharField(max_length=255, blank=True)
+
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(verbose_name=_('Date joined'), default=timezone.now)
