@@ -16,6 +16,9 @@ urlpatterns = [
     path('api/user/', include('users.urls', namespace='users')),
     path('api/user/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/user/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
+    path('api/notes/', include('notes.urls', namespace='notes')),
+
     path('schema/', get_schema_view(title='wozniak-dev: API Docs', description='Noteneo app API'), name='api-schema'),
     path('docs/', include_docs_urls(title='wozniak-dev: API Docs'), name='docs'),
 ]

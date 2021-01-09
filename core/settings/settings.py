@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'users',
+    'notes',
 
     'rest_framework',
     'corsheaders',
@@ -176,14 +177,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-SENDER_EMAIL = ''
+SENDER_EMAIL = os.environ.get("EMAIL_HOST_USER") or env('EMAIL_HOST_USER')
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER") or env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD") or env('EMAIL_HOST_PASSWORD')
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/

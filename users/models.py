@@ -3,6 +3,10 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
+from django.dispatch import receiver
+from django_rest_passwordreset.signals import reset_password_token_created
+
+from emails.emails import ResetPasswordEmail
 from users import managers
 
 
@@ -36,3 +40,10 @@ class User(auth_models.AbstractUser):
 
     def __str__(self):
         return self.full_username
+
+
+@receiver(reset_password_token_created)
+def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
+    ResetPasswordEmail("noreply@somehost.local",
+                       reset_password_token.user,
+                       reset_password_token.key).send([reset_password_token.user.email])
