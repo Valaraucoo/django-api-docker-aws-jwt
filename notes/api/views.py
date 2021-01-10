@@ -1,12 +1,17 @@
+import datetime
+
 from rest_framework import mixins
 from rest_framework import generics
-from rest_framework.authentication import TokenAuthentication
+from rest_framework import response
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
 from .serializers import NoteSerializer, NoteSerializerShort
 
 from notes import models
 from notes.api import permissions
+
+from users import models as users_models
 
 
 class NoteListView(mixins.CreateModelMixin, mixins.ListModelMixin, generics.GenericAPIView):
@@ -72,7 +77,6 @@ class NoteRetrieveView(mixins.RetrieveModelMixin,
 class UserNotesListView(mixins.ListModelMixin, generics.GenericAPIView):
     queryset = models.Note.objects.all()
     serializer_class = NoteSerializer
-    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
@@ -80,3 +84,36 @@ class UserNotesListView(mixins.ListModelMixin, generics.GenericAPIView):
 
     def get_queryset(self):
         return models.Note.objects.filter(author__email=self.request.user.email)
+
+
+class SubscriptionView(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self) -> users_models.User:
+        return self.request.user
+
+    def get(self, request, *args, **kwargs):
+        user = self.get_object()
+        return response.Response(data={
+            'is_subscriber': user.is_subscriber,
+            'subscription_to': user.subscription_to,
+            'time_left': user.subscription_to.replace(tzinfo=None) - datetime.datetime.now(),
+        }, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        user = self.get_object()
+        data = {
+            'is_subscriber': user.is_subscriber,
+            'subscription_to': user.subscription_to,
+            'time_left': user.subscription_to.replace(tzinfo=None) - datetime.datetime.now(),
+        }
+
+        if user.is_subscriber:
+            return response.Response(data={
+                'message': 'User is already a subscriber.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # subscription logic
+        # user.subscription_to += days(30)
+
+        return response.Response(data=data, status=status.HTTP_200_OK)
