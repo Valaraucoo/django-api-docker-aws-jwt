@@ -12,6 +12,7 @@ from notes import models
 from notes.api import permissions
 
 from users import models as users_models
+from users.api import serializers as users_serializers
 
 
 class NoteListView(mixins.CreateModelMixin, mixins.ListModelMixin, generics.GenericAPIView):
@@ -87,6 +88,7 @@ class UserNotesListView(mixins.ListModelMixin, generics.GenericAPIView):
 
 
 class SubscriptionView(generics.GenericAPIView):
+    serializer_class = users_serializers.UserSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_object(self) -> users_models.User:
