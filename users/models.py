@@ -55,6 +55,5 @@ class User(auth_models.AbstractUser):
 
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
-    ResetPasswordEmail("noreply@somehost.local",
-                       reset_password_token.user,
-                       reset_password_token.key).send([reset_password_token.user.email])
+    ResetPasswordEmail().create_reset_password_email(user=reset_password_token.user,
+                                                     token=reset_password_token.key).send()

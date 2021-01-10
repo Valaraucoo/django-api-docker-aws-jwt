@@ -11,3 +11,8 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(models.Note)
 class NoteAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(models.PaymentInvoice)
+class PaymentInvoiceAdmin(admin.ModelAdmin):
+    pass

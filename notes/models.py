@@ -49,3 +49,19 @@ class Note(models.Model):
         if len(self.content) > 300:
             return self.content[:300]
         return self.content
+
+
+class PaymentInvoice(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey('users.User', related_name='invoices', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f'Invoice: {self.user}'
+
+    def clean(self):
+        super().clean()
+        if not self.user.address:
+            raise ValidationError({'user': 'User must have specified address'})
+        if not self.user.phone:
+            raise ValidationError({'user': 'User must have specified phone'})
