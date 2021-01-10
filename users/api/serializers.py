@@ -7,8 +7,13 @@ from users.models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('email', 'first_name', 'last_name', 'phone', 'address', 'password')
-        extra_kwargs = {'password': {'write_only': True, 'min_length': 5}}
+        fields = ('email', 'first_name', 'last_name', 'phone',
+                  'address', 'is_subscriber', 'subscription_to', 'is_subscriber', 'password')
+        extra_kwargs = {
+            'password': {'write_only': True, 'min_length': 5},
+            'is_subscriber': {'read_only': True},
+            'subscription_to': {'read_only': True},
+        }
 
     def update(self, instance, validated_data) -> User:
         password: Optional[str] = validated_data.pop('password', None)
@@ -17,6 +22,14 @@ class UserSerializer(serializers.ModelSerializer):
             user.set_password(password)
             user.save()
         return user
+
+
+class UserRetrieveSerializer(UserSerializer):
+    class Meta(UserSerializer.Meta):
+        fields = ('email', 'first_name', 'last_name', 'is_subscriber')
+        extra_kwargs = {
+            'is_subscriber': {'read_only': True},
+        }
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):

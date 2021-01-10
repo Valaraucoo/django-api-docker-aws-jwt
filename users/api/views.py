@@ -9,7 +9,7 @@ from rest_framework import permissions
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import RegisterUserSerializer, UserSerializer
+from .serializers import RegisterUserSerializer, UserSerializer, UserRetrieveSerializer
 from users.models import User
 
 
@@ -23,7 +23,7 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
 
 class RetrieveUserProfileView(mixins.RetrieveModelMixin, generics.GenericAPIView):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserRetrieveSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get(self, request, *args, **kwargs):

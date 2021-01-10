@@ -49,25 +49,3 @@ class Note(models.Model):
         if len(self.content) > 300:
             return self.content[:300]
         return self.content
-
-
-class Subscription(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.OneToOneField('users.User', on_delete=models.PROTECT, related_name='subscription')
-    is_active = models.BooleanField(default=False)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ('user',)
-
-    def __str__(self) -> str:
-        return f'Subscription: {self.user}'
-
-    def clean(self):
-        super().clean()
-        if self.user:
-            if not self.user.address:
-                raise ValidationError({'user': 'User must have address set'})
-            if not self.user.phone:
-                raise ValidationError({'user': 'User must have phone number set'})

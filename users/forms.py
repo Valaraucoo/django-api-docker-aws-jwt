@@ -12,7 +12,7 @@ class CustomUserCreationForm(UserCreationForm):
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = User
-        fields = ('email', 'first_name', 'last_name', 'phone', 'address')
+        fields = ('email', 'first_name', 'last_name', 'phone', 'address', 'subscription_to')
 
 
 tailwind_form = 'appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 ' \

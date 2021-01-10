@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth import models as auth_models
 from django.db import models
 from django.utils import timezone
@@ -26,6 +28,7 @@ class User(auth_models.AbstractUser):
     email = models.EmailField(unique=True, verbose_name=_('Email address'))
     phone = models.CharField(max_length=9, blank=True, verbose_name=_('Phone number'))
     address = models.CharField(max_length=255, blank=True)
+    subscription_to = models.DateTimeField(null=True, blank=True)
 
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -36,12 +39,18 @@ class User(auth_models.AbstractUser):
 
     objects = managers.CustomUserManager()
 
+    def __str__(self) -> str:
+        return self.full_username
+
     @property
     def full_username(self) -> str:
         return f"{self.first_name} {self.last_name} ({self.email})"
 
-    def __str__(self):
-        return self.full_username
+    @property
+    def is_subscriber(self) -> bool:
+        if not self.subscription_to:
+            return False
+        return self.subscription_to.replace(tzinfo=None) - datetime.datetime.now() > datetime.timedelta(days=0)
 
 
 @receiver(reset_password_token_created)

@@ -63,7 +63,7 @@ class NoteRetrieveView(mixins.RetrieveModelMixin,
         try:
             if not self.request.user.is_authenticated:
                 return NoteSerializerShort
-            if self.get_object().author == self.request.user or self.request.user.subscription.is_active:
+            if self.get_object().author == self.request.user or self.request.user.is_subscriber:
                 return NoteSerializer
         except AttributeError:
             return NoteSerializerShort
