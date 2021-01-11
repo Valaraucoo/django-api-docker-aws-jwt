@@ -7,7 +7,7 @@ from users.models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('email', 'first_name', 'last_name', 'phone',
+        fields = ('email', 'first_name', 'last_name', 'phone', 'date_joined',
                   'address', 'is_subscriber', 'subscription_to', 'is_subscriber', 'password')
         extra_kwargs = {
             'password': {'write_only': True, 'min_length': 5},
@@ -26,7 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserRetrieveSerializer(UserSerializer):
     class Meta(UserSerializer.Meta):
-        fields = ('email', 'first_name', 'last_name', 'is_subscriber')
+        fields = ('email', 'first_name', 'last_name', 'is_subscriber', 'date_joined')
         extra_kwargs = {
             'is_subscriber': {'read_only': True},
         }

@@ -32,7 +32,7 @@ class User(auth_models.AbstractUser):
 
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    date_joined = models.DateTimeField(verbose_name=_('Date joined'), default=timezone.now)
+    date_joined = models.DateTimeField(verbose_name=_('Date joined'), auto_now_add=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ('first_name', 'last_name',)
