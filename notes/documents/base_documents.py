@@ -6,22 +6,32 @@ from django.template.loader import get_template
 from django.http import HttpResponse
 from xhtml2pdf import pisa
 
+from notes.models import PaymentInvoice
+from users.models import User
+
 
 class DocumentTemplateInterface(abc.ABC):
     template_name: str
     filename: str
 
-    def __init__(self, template_name: str, filename: str):
-        self.template_name = template_name
-        self.filename = filename
+    def __init__(self, user: User, invoice: PaymentInvoice):
+        self.user = user
+        self.invoice = invoice
 
     @abc.abstractmethod
     def get_context_data(self, *args, **kwargs) -> Dict[Any, Any]:
         pass
 
-    def save(self, *args, **kwargs) -> HttpResponse:
+    @abc.abstractmethod
+    def send(self, *args, **kwargs) -> None:
+        pass
+
+    def get_document(self, *args, **kwargs) -> Tuple[pisa.pisaDocument, BytesIO]:
         context = self.get_context_data(*args, **kwargs)
-        pdf, bytes_pdf = self._generate_document(context)
+        return self.render_pdf(context)
+
+    def get_http_response(self, *args, **kwargs) -> HttpResponse:
+        pdf, bytes_pdf = self.get_document(*args, **kwargs)
         if pdf:
             response = HttpResponse(bytes_pdf.getvalue(), content_type='application/pdf')
             content = f"inline; filename={self.filename}"
@@ -29,7 +39,7 @@ class DocumentTemplateInterface(abc.ABC):
             return response
         return HttpResponse("Not found", status=404)
 
-    def _generate_document(self, context: Dict[Any, Any]) -> Tuple[pisa.pisaDocument, BytesIO]:
+    def render_pdf(self, context: Dict[Any, Any]) -> Tuple[pisa.pisaDocument, BytesIO]:
         template = get_template(self.template_name)
         html = template.render(context)
         result = BytesIO()

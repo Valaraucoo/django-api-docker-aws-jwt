@@ -12,7 +12,7 @@ class EmailFactoryInterface(abc.ABC):
 
     def __init__(self, email_to: List[str] = None, email_from: str = settings.SENDER_EMAIL,
                  cc: List[str] = None, bcc: List[str] = None, reply_to: List[str] = None):
-        self.email_to: List[str] = email_to
+        self.email_to: List[str] = email_to or []
         self.email_from: str = email_from
         self.cc: List[str] = cc
         self.bcc: List[str] = bcc

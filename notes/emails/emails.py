@@ -18,7 +18,7 @@ class PaymentMailFactory(base_emails.EmailFactoryInterface):
     def create_invoice_mail(self, user: users_models.User, invoice: notes_models.PaymentInvoice) -> mail.EmailMessage:
         self.user = user
         self.invoice = invoice
-        self.email_to = [self.user.email]
+        self.email_to = [self.user.email] + self.email_to
 
         return self.create_email()
 
