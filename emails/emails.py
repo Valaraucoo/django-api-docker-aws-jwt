@@ -1,5 +1,7 @@
 from typing import List
 
+from django.urls import reverse
+
 from emails.base_emails import EmailFactoryInterface
 
 
@@ -19,7 +21,8 @@ class ResetPasswordEmail(EmailFactoryInterface):
         return self.create_email()
 
     def get_context_data(self):
+        reset_link = "{}?token={}".format(reverse('password_reset:reset-password-request'), self.token)
         return {
             'user': self.user,
-            'token': self.token
+            'reset_link': reset_link
         }

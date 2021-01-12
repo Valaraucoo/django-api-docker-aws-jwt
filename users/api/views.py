@@ -30,8 +30,8 @@ class RetrieveUserProfileView(mixins.RetrieveModelMixin, generics.GenericAPIView
         return self.retrieve(request, *args, **kwargs)
 
     def get_object(self) -> User:
-        email = self.kwargs.get('email')
-        return get_object_or_404(User, email=email)
+        pk = self.kwargs.get('pk')
+        return get_object_or_404(User, pk=pk)
 
 
 class CustomUserCreateView(APIView):

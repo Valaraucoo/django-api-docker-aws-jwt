@@ -12,12 +12,14 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class NoteSerializer(serializers.ModelSerializer):
     likes_count = serializers.IntegerField(read_only=True)
-    categories = CategorySerializer(many=True, read_only=True)
-    author = users_serializers.UserSerializer(read_only=True)
+    categories = CategorySerializer(many=True)
+    author = users_serializers.UserRetrieveSerializer(read_only=True)
+    likes = users_serializers.UserRetrieveSerializer(read_only=True, many=True)
 
     class Meta:
         model = models.Note
-        fields = ('id', 'title', 'content', 'categories', 'author', 'likes_count', 'created_at', 'updated_at')
+        fields = ('id', 'title', 'content', 'categories', 'author',
+                  'likes_count', 'likes', 'created_at', 'updated_at')
 
 
 class NoteSerializerShort(serializers.ModelSerializer):
