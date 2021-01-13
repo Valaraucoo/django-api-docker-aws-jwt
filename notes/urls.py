@@ -17,5 +17,6 @@ urlpatterns = [
     path('my-notes/', views.UserNotesListView.as_view(), name='my-notes'),
     path('likes/', views.UserLikesListView.as_view(), name='my-likes'),
     path('bookmarks/', views.UserBookmarksListView.as_view(), name='my-bookmarks'),
-    path('subscribe/', views.SubscriptionView.as_view(), name='subscribe'),
+    path('payment/', views.SubscriptionView.as_view(), name='payment'),
+    path('payment/notification/', views.PaymentNotificationView.as_view(), name='payment-notification'),
 ]

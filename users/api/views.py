@@ -10,6 +10,7 @@ from rest_framework import permissions
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import RegisterUserSerializer, UserSerializer, UserRetrieveSerializer
+from users.emails.emails import WelcomeEmail
 from users.models import User
 
 
@@ -19,6 +20,9 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
 
     def get_object(self) -> User:
         return self.request.user
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
 
 
 class RetrieveUserProfileView(mixins.RetrieveModelMixin, generics.GenericAPIView):
@@ -48,6 +52,7 @@ class CustomUserCreateView(APIView):
         if serializer.is_valid():
             user = serializer.save()
             if user:
+                WelcomeEmail().create_welcome_email(user).send()
                 return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

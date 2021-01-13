@@ -12,6 +12,7 @@ from .serializers import CategorySerializer, NoteSerializer, NoteSerializerShort
 
 from notes import models
 from notes.api import permissions
+from notes.emails import emails
 
 from users import models as users_models
 from users.api import serializers as users_serializers
@@ -95,7 +96,7 @@ class NoteRetrieveView(mixins.RetrieveModelMixin,
 
 class LikeNoteView(generics.GenericAPIView):
     queryset = models.Note.objects.all()
-    serializer_class = NoteSerializer
+    serializer_class = NoteSerializerShort
     permission_classes = (IsAuthenticated,)
 
     def get_object(self):
@@ -106,7 +107,8 @@ class LikeNoteView(generics.GenericAPIView):
         user = self.request.user
         obj.like(user)
         obj.save()
-        return response.Response(data={"message": "ok"}, status=status.HTTP_200_OK)
+        serializer = self.serializer_class(obj)
+        return response.Response(data=serializer.data, status=status.HTTP_200_OK)
 
     def delete(self, request, *args, **kwargs):
         obj = self.get_object()
@@ -118,7 +120,7 @@ class LikeNoteView(generics.GenericAPIView):
 
 class BookmarkNoteView(generics.GenericAPIView):
     queryset = models.Note.objects.all()
-    serializer_class = NoteSerializer
+    serializer_class = NoteSerializerShort
     permission_classes = (IsAuthenticated,)
 
     def get_object(self):
@@ -129,7 +131,8 @@ class BookmarkNoteView(generics.GenericAPIView):
         user = self.request.user
         obj.bookmark(user)
         obj.save()
-        return response.Response(data={"message": "ok"}, status=status.HTTP_200_OK)
+        serializer = self.serializer_class(obj)
+        return response.Response(data=serializer.data, status=status.HTTP_200_OK)
 
     def delete(self, request, *args, **kwargs):
         obj = self.get_object()
@@ -144,7 +147,7 @@ class CategoryNoteView(generics.GenericAPIView):
     POST/DELETE data must contains `category`: id of category
     """
     queryset = models.Note.objects.all()
-    serializer_class = NoteSerializer
+    serializer_class = NoteSerializerShort
     permission_classes = (IsAuthenticated,)
 
     def get_object(self):
@@ -156,7 +159,8 @@ class CategoryNoteView(generics.GenericAPIView):
         category = get_object_or_404(models.Category, pk=category_pk)
         obj.categorize(category)
         obj.save()
-        return response.Response(data={"message": "ok"}, status=status.HTTP_200_OK)
+        serializer = self.serializer_class(obj)
+        return response.Response(data=serializer.data, status=status.HTTP_200_OK)
 
     def delete(self, request, *args, **kwargs):
         obj = self.get_object()
@@ -214,3 +218,15 @@ class UserBookmarksListView(BaseNoteListView):
 class UserNotesListView(BaseNoteListView):
     def get_queryset(self):
         return models.Note.objects.filter(author__email=self.request.user.email)
+
+
+class PaymentNotificationView(generics.GenericAPIView):
+    """
+    PaymentNotificationView is used to send the user the time remaining until the end of the subscription.
+    """
+    serializer_class = users_serializers.UserSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        emails.PaymentNotificationMailFactory().create_notification_email(self.request.user).send()
+        return response.Response(data={"message": "ok"}, status=status.HTTP_200_OK)

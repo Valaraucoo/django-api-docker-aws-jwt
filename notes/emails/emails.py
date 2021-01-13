@@ -1,3 +1,5 @@
+import datetime
+
 from typing import Any, Dict, List
 
 from django.core import mail
@@ -26,4 +28,24 @@ class PaymentMailFactory(base_emails.EmailFactoryInterface):
         return {
             'user': self.user,
             'invoice': self.invoice
+        }
+
+
+class PaymentNotificationMailFactory(base_emails.EmailFactoryInterface):
+    user: users_models.User
+    email_to: List[str]
+
+    subject: str = "Payment Notification"
+    email_template_name: str = "emails/notes/payment-notification.html"
+
+    def create_notification_email(self, user) -> mail.EmailMessage:
+        self.user = user
+        self.email_to = [self.user.email] + self.email_to
+
+        return self.create_email()
+
+    def get_context_data(self, *args, **kwargs) -> Dict[Any, Any]:
+        return {
+            'user': self.user,
+            'days': (datetime.datetime.now() - self.user.subscription_to.replace(tzinfo=None)).days
         }

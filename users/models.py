@@ -2,13 +2,12 @@ import datetime
 
 from django.contrib.auth import models as auth_models
 from django.db import models
-from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from django.dispatch import receiver
 from django_rest_passwordreset.signals import reset_password_token_created
 
-from emails.emails import ResetPasswordEmail
+from users.emails.emails import ResetPasswordEmail
 from users import managers
 
 
