@@ -6,6 +6,7 @@ from rest_framework import mixins
 from rest_framework import generics
 from rest_framework import response
 from rest_framework import status
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
 from .serializers import CategorySerializer, NoteSerializer, NoteSerializerShort
@@ -94,7 +95,7 @@ class NoteRetrieveView(mixins.RetrieveModelMixin,
             return NoteSerializerShort
 
 
-class LikeNoteView(generics.GenericAPIView):
+class LikeNoteView(APIView):
     queryset = models.Note.objects.all()
     serializer_class = NoteSerializerShort
     permission_classes = (IsAuthenticated,)
@@ -118,7 +119,7 @@ class LikeNoteView(generics.GenericAPIView):
         return response.Response(data={"message": "ok"}, status=status.HTTP_200_OK)
 
 
-class BookmarkNoteView(generics.GenericAPIView):
+class BookmarkNoteView(APIView):
     queryset = models.Note.objects.all()
     serializer_class = NoteSerializerShort
     permission_classes = (IsAuthenticated,)
@@ -142,12 +143,11 @@ class BookmarkNoteView(generics.GenericAPIView):
         return response.Response(data={"message": "ok"}, status=status.HTTP_200_OK)
 
 
-class CategoryNoteView(generics.GenericAPIView):
+class CategoryNoteView(APIView):
     """
     POST/DELETE data must contains `category`: id of category
     """
     queryset = models.Note.objects.all()
-    serializer_class = NoteSerializerShort
     permission_classes = (IsAuthenticated,)
 
     def get_object(self):
@@ -170,8 +170,8 @@ class CategoryNoteView(generics.GenericAPIView):
         obj.save()
         return response.Response(data={"message": "ok"}, status=status.HTTP_200_OK)
 
-
-class SubscriptionView(generics.GenericAPIView):
+# TODO
+class SubscriptionView(APIView):
     serializer_class = users_serializers.UserSerializer
     permission_classes = (IsAuthenticated,)
 
@@ -220,11 +220,10 @@ class UserNotesListView(BaseNoteListView):
         return models.Note.objects.filter(author__email=self.request.user.email)
 
 
-class PaymentNotificationView(generics.GenericAPIView):
+class PaymentNotificationView(APIView):
     """
     PaymentNotificationView is used to send the user the time remaining until the end of the subscription.
     """
-    serializer_class = users_serializers.UserSerializer
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
