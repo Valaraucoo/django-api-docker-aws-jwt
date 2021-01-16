@@ -1,5 +1,3 @@
-from django.shortcuts import get_object_or_404
-
 from rest_framework import mixins
 from rest_framework import generics
 from rest_framework import response
@@ -9,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 
 from pages import models
 from pages.api import serializers
+from pages.emails import emails
 
 
 class PageRetrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
@@ -48,6 +47,10 @@ class PublishPageView(APIView):
 
     def post(self, request, *args, **kwargs):
         page = self.get_object()
+        if page.is_created:
+            return response.Response(data={'error': 'This page was created earlier'},
+                                     status=status.HTTP_400_BAD_REQUEST)
         page.is_created = True
         page.save()
+        emails.PagePublishedMailFactory().create_page_published_email(self.request.user, page).send()
         return response.Response(data={'message': 'ok'}, status=status.HTTP_200_OK)
