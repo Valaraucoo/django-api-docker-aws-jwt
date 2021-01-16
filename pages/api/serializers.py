@@ -10,6 +10,12 @@ class PageAnalyticsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class MainPageAnalyticsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.MainPageAnalytics
+        fields = '__all__'
+
+
 class PageSerializer(serializers.ModelSerializer):
     user = users_serializers.UserRetrieveSerializer(read_only=True)
     view_count = serializers.IntegerField(read_only=True)

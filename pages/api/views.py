@@ -17,8 +17,7 @@ class PageRetrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         page = self.get_object()
-        ip_addr = self.request.META['REMOTE_ADDR']
-        models.PageAnalytics.objects.create(page=page, ip_addr=request.ipinfo.ip,
+        models.PageAnalytics.objects.create(page=page, ip_addr=self.request.ipinfo.ip,
                                             lat=self.request.ipinfo.latitude,
                                             lng=self.request.ipinfo.longitude,
                                             city=self.request.ipinfo.city,
@@ -67,7 +66,7 @@ class PublishPageView(APIView):
         return response.Response(data={'message': 'ok'}, status=status.HTTP_200_OK)
 
 
-class AnalyticsListView(mixins.ListModelMixin, generics.GenericAPIView):
+class AnalyticsBaseListView(mixins.ListModelMixin, generics.GenericAPIView):
     queryset = models.PageAnalytics.objects.all()
     serializer_class = serializers.PageAnalyticsSerializer
     permission_classes = (IsAuthenticated,)
@@ -76,4 +75,23 @@ class AnalyticsListView(mixins.ListModelMixin, generics.GenericAPIView):
         return self.list(request, *args, **kwargs)
 
     def get_queryset(self):
-        return self.queryset.filter(page__user=self.request.user)
+        qs = self.queryset.filter(page__user=self.request.user)
+        country = self.request.query_params.get('country')
+        if country:
+            qs = qs.filter(country=country)
+        return qs
+
+
+class PageAnalyticsListView(AnalyticsBaseListView):
+    pass
+
+
+class MainPageAnalyticsListView(AnalyticsBaseListView):
+    def post(self, request):
+        analytics = models.MainPageAnalytics.objects.create(ip_addr=self.request.ipinfo.ip,
+                                                            lat=self.request.ipinfo.latitude,
+                                                            lng=self.request.ipinfo.longitude,
+                                                            city=self.request.ipinfo.city,
+                                                            country=self.request.ipinfo.country)
+        serializer = serializers.MainPageAnalyticsSerializer(analytics)
+        return response.Response(data=serializer.data, status=status.HTTP_201_CREATED)

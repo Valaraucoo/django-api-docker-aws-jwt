@@ -63,8 +63,7 @@ class Page(models.Model):
         return self.analytics.count()
 
 
-class PageAnalytics(models.Model):
-    page = models.ForeignKey('Page', related_name='analytics', on_delete=models.CASCADE)
+class Analytics(models.Model):
     ip_addr = models.CharField(max_length=30)
 
     lat = models.CharField(max_length=30)
@@ -74,5 +73,17 @@ class PageAnalytics(models.Model):
 
     date = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        abstract = True
+
+
+class PageAnalytics(Analytics):
+    page = models.ForeignKey('Page', related_name='analytics', on_delete=models.CASCADE)
+
     def __str__(self) -> str:
         return f"Page analytics: {self.page} {self.date}"
+
+
+class MainPageAnalytics(Analytics):
+    def __str__(self) -> str:
+        return f"Main analytics: {self.date}"
