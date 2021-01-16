@@ -12,7 +12,7 @@ PAGE_TYPES_CHOICES = (
 
 
 class Page(models.Model):
-    user = models.OneToOneField('users.User', related_name='page', on_delete=models.CASCADE)
+    user = models.ForeignKey('users.User', related_name='pages', on_delete=models.CASCADE)
     is_created = models.BooleanField(default=False)
     slug = models.SlugField(blank=True, null=True, unique=True)
 
@@ -21,6 +21,21 @@ class Page(models.Model):
 
     header_title = models.CharField(max_length=30, default='')
     header_description = models.CharField(max_length=255, default='')
+
+    services_title = models.CharField(max_length=30, default='')
+    services_description = models.CharField(max_length=255, default='')
+
+    services_1_type = models.CharField(max_length=30, default='')
+    services_1_title = models.CharField(max_length=30, default='')
+    services_1_description = models.CharField(max_length=255, default='')
+
+    services_2_type = models.CharField(max_length=30, default='')
+    services_2_title = models.CharField(max_length=30, default='')
+    services_2_description = models.CharField(max_length=255, default='')
+
+    services_3_type = models.CharField(max_length=30, default='')
+    services_3_title = models.CharField(max_length=30, default='')
+    services_3_description = models.CharField(max_length=255, default='')
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -32,7 +47,6 @@ class Page(models.Model):
         return f'Page: {self.name} ({self.page_type})'
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            uid = str(uuid.uuid4())[:20]
-            self.slug = slugify(f"{self.name}-{uid}")
+        uid = str(uuid.uuid4())[:20]
+        self.slug = slugify(f"{self.name}-{uid}")
         super().save(*args, **kwargs)

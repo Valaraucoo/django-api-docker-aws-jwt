@@ -18,6 +18,10 @@ class PageRetrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
+    def get_object(self):
+        slug = self.kwargs.get('slug')
+        return self.queryset.get(slug=slug)
+
     def get_queryset(self):
         return self.queryset.filter(is_created=True)
 

@@ -26,7 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserRetrieveSerializer(UserSerializer):
     class Meta(UserSerializer.Meta):
-        fields = ('pk', 'email', 'first_name', 'last_name', 'is_subscriber', 'date_joined')
+        fields = ('pk', 'email', 'first_name', 'last_name', 'company', 'is_subscriber', 'date_joined')
         extra_kwargs = {
             'is_subscriber': {'read_only': True},
         }
@@ -42,7 +42,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'first_name', 'last_name', 'password',)
+        fields = ('email', 'first_name', 'last_name', 'company', 'password',)
         extra_kwargs = {
             'password': {'write_only': True},
         }

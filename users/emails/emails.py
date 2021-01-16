@@ -22,7 +22,7 @@ class WelcomeEmail(EmailFactoryInterface):
 
 class ResetPasswordEmail(EmailFactoryInterface):
     email_template_name: str = "emails/users/password_reset.html"
-    subject: str = "Noteneo: Reset your password"
+    subject: str = "Reset your password"
 
     user = None
     email_to: List[str]

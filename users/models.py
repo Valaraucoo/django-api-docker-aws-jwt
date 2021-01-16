@@ -28,6 +28,7 @@ class User(auth_models.AbstractUser):
     last_name = models.CharField(max_length=150, blank=True, verbose_name=_('Last name'))
 
     email = models.EmailField(unique=True, verbose_name=_('Email address'))
+    company = models.CharField(max_length=100, default='')
     phone = models.CharField(max_length=9, blank=True, verbose_name=_('Phone number'))
     address = models.CharField(max_length=255, blank=True)
     subscription_to = models.DateTimeField(null=True, blank=True)
@@ -62,5 +63,6 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 
 
 @receiver(post_save, sender=User)
-def save_profile(sender, instance, **kwargs):
-    pages_models.Page.objects.create(user=instance, is_created=False)
+def save_profile(sender, instance, created, **kwargs):
+    if created:
+        pages_models.Page.objects.create(user=instance, is_created=False)
