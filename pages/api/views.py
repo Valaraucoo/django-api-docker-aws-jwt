@@ -66,7 +66,7 @@ class PublishPageView(APIView):
         return response.Response(data={'message': 'ok'}, status=status.HTTP_200_OK)
 
 
-class AnalyticsBaseListView(mixins.ListModelMixin, generics.GenericAPIView):
+class MainPageAnalyticsView(mixins.ListModelMixin, generics.GenericAPIView):
     queryset = models.PageAnalytics.objects.all()
     serializer_class = serializers.PageAnalyticsSerializer
     permission_classes = (IsAuthenticated,)
@@ -81,12 +81,6 @@ class AnalyticsBaseListView(mixins.ListModelMixin, generics.GenericAPIView):
             qs = qs.filter(country=country)
         return qs
 
-
-class PageAnalyticsListView(AnalyticsBaseListView):
-    pass
-
-
-class MainPageAnalyticsListView(AnalyticsBaseListView):
     def post(self, request):
         analytics = models.MainPageAnalytics.objects.create(ip_addr=self.request.ipinfo.ip,
                                                             lat=self.request.ipinfo.latitude,
@@ -95,3 +89,23 @@ class MainPageAnalyticsListView(AnalyticsBaseListView):
                                                             country=self.request.ipinfo.country)
         serializer = serializers.MainPageAnalyticsSerializer(analytics)
         return response.Response(data=serializer.data, status=status.HTTP_201_CREATED)
+
+
+class PageAnalyticsSummaryView(APIView):
+    queryset = models.Page.objects.all()
+    serializer_class = serializers.PageAnalyticsSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self):
+        return self.queryset.get(user=self.request.user)
+
+    def get(self, request):
+        page = self.get_object()
+        analytics = page.analytics.all()
+        data = {
+            'view_count': page.view_count,
+            'week_views_count': page.week_views_count,
+            'month_views_count': page.month_views_count,
+            'data':  serializers.PageAnalyticsSerializer(analytics, many=True).data
+        }
+        return response.Response(data=data, status=status.HTTP_200_OK)

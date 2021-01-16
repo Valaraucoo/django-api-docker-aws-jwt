@@ -1,3 +1,4 @@
+import datetime
 import uuid
 
 from django.db import models
@@ -18,6 +19,7 @@ class Page(models.Model):
 
     name = models.CharField(max_length=30, default='')
     page_type = models.CharField(max_length=20, choices=PAGE_TYPES_CHOICES, default='')
+    contact_email = models.CharField(max_length=100, default='')
 
     header_title = models.CharField(max_length=30, default='')
     header_description = models.CharField(max_length=255, default='')
@@ -37,13 +39,17 @@ class Page(models.Model):
     services_3_title = models.CharField(max_length=30, default='')
     services_3_description = models.CharField(max_length=255, default='')
 
+    about_title = models.CharField(max_length=30, default='')
+    about_subtitle = models.CharField(max_length=50, default='')
+    about_description = models.TextField(null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    __name = None
+
     class Meta:
         ordering = ('name', 'page_type', 'updated_at',)
-
-    __name = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -61,6 +67,14 @@ class Page(models.Model):
     @property
     def view_count(self) -> int:
         return self.analytics.count()
+
+    @property
+    def week_views_count(self) -> int:
+        return self.analytics.filter(date__gt=datetime.datetime.now()-datetime.timedelta(days=7)).count()
+
+    @property
+    def month_views_count(self) -> int:
+        return self.analytics.filter(date__gt=datetime.datetime.now()-datetime.timedelta(days=30)).count()
 
 
 class Analytics(models.Model):
