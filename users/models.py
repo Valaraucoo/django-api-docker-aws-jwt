@@ -2,6 +2,7 @@ import datetime
 
 from django.contrib.auth import models as auth_models
 from django.db import models
+from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
 
 from django.dispatch import receiver
@@ -9,6 +10,8 @@ from django_rest_passwordreset.signals import reset_password_token_created
 
 from users.emails.emails import ResetPasswordEmail
 from users import managers
+
+from pages import models as pages_models
 
 
 GENDER_CHOICES = (
@@ -56,3 +59,8 @@ class User(auth_models.AbstractUser):
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
     ResetPasswordEmail().create_reset_password_email(user=reset_password_token.user,
                                                      token=reset_password_token.key).send()
+
+
+@receiver(post_save, sender=User)
+def save_profile(sender, instance, **kwargs):
+    pages_models.Page.objects.create(user=instance, is_created=False)
