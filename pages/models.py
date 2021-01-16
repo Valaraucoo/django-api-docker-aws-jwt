@@ -43,10 +43,36 @@ class Page(models.Model):
     class Meta:
         ordering = ('name', 'page_type', 'updated_at',)
 
+    __name = None
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__name = self.name
+
     def __str__(self) -> str:
         return f'Page: {self.name} ({self.page_type})'
 
     def save(self, *args, **kwargs):
-        uid = str(uuid.uuid4())[:20]
-        self.slug = slugify(f"{self.name}-{uid}")
+        if self.__name != self.name:
+            uid = str(uuid.uuid4())[:20]
+            self.slug = slugify(f"{self.name}-{uid}")
         super().save(*args, **kwargs)
+
+    @property
+    def view_count(self) -> int:
+        return self.analytics.count()
+
+
+class PageAnalytics(models.Model):
+    page = models.ForeignKey('Page', related_name='analytics', on_delete=models.CASCADE)
+    ip_addr = models.CharField(max_length=30)
+
+    lat = models.CharField(max_length=30)
+    lng = models.CharField(max_length=30)
+    country = models.CharField(max_length=30)
+    city = models.CharField(max_length=255)
+
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f"Page analytics: {self.page} {self.date}"

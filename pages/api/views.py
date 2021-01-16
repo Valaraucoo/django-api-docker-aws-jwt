@@ -16,6 +16,13 @@ class PageRetrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
     lookup_field = 'slug'
 
     def get(self, request, *args, **kwargs):
+        page = self.get_object()
+        ip_addr = self.request.META['REMOTE_ADDR']
+        models.PageAnalytics.objects.create(page=page, ip_addr=request.ipinfo.ip,
+                                            lat=self.request.ipinfo.latitude,
+                                            lng=self.request.ipinfo.longitude,
+                                            city=self.request.ipinfo.city,
+                                            country=self.request.ipinfo.country)
         return self.retrieve(request, *args, **kwargs)
 
     def get_object(self):
@@ -58,3 +65,15 @@ class PublishPageView(APIView):
         page.save()
         emails.PagePublishedMailFactory().create_page_published_email(self.request.user, page).send()
         return response.Response(data={'message': 'ok'}, status=status.HTTP_200_OK)
+
+
+class AnalyticsListView(mixins.ListModelMixin, generics.GenericAPIView):
+    queryset = models.PageAnalytics.objects.all()
+    serializer_class = serializers.PageAnalyticsSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return self.queryset.filter(page__user=self.request.user)
