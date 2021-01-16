@@ -22,12 +22,12 @@ class PageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Page
-        fields = ('id', 'slug', 'user', 'is_created',
+        fields = ('id', 'slug', 'user', 'is_created', 'main_color',
                   'name', 'page_type', 'contact_email', 'view_count',
                   'header_title', 'header_description',
-                  'services_title', 'services_description',
+                  'services_enable', 'services_title', 'services_description',
                   'services_1_type', 'services_1_title', 'services_1_description',
                   'services_2_type', 'services_2_title', 'services_2_description',
                   'services_3_type', 'services_3_title', 'services_3_description',
-                  'about_title', 'about_subtitle', 'about_description',
+                  'about_enable', 'about_title', 'about_subtitle', 'about_description',
                   'created_at', 'updated_at')

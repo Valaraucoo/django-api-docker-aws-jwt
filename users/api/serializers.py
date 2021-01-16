@@ -7,10 +7,9 @@ from users.models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('pk', 'email', 'first_name', 'last_name', 'phone', 'date_joined',
-                  'address', 'is_subscriber', 'subscription_to', 'is_subscriber', 'password')
+        fields = ('pk', 'email', 'first_name', 'last_name', 'phone', 'date_joined', 'company',
+                  'address', 'is_subscriber', 'subscription_to', 'is_subscriber')
         extra_kwargs = {
-            'password': {'write_only': True, 'min_length': 5},
             'is_subscriber': {'read_only': True},
             'subscription_to': {'read_only': True},
         }

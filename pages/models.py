@@ -24,6 +24,7 @@ class Page(models.Model):
     header_title = models.CharField(max_length=30, default='')
     header_description = models.CharField(max_length=255, default='')
 
+    services_enable = models.BooleanField(default=False)
     services_title = models.CharField(max_length=30, default='')
     services_description = models.CharField(max_length=255, default='')
 
@@ -39,9 +40,12 @@ class Page(models.Model):
     services_3_title = models.CharField(max_length=30, default='')
     services_3_description = models.CharField(max_length=255, default='')
 
+    about_enable = models.BooleanField(default=False)
     about_title = models.CharField(max_length=30, default='')
     about_subtitle = models.CharField(max_length=50, default='')
     about_description = models.TextField(null=True, blank=True)
+
+    main_color = models.CharField(max_length=30, default='')
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
