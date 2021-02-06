@@ -11,6 +11,8 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 
 from .serializers import CategorySerializer, NoteSerializer, NoteSerializerShort
 
+from core.rest_framework_backends import BasePagination
+
 from notes import models
 from notes.api import permissions
 from notes.emails import emails
@@ -28,6 +30,15 @@ class BaseNoteListView(mixins.ListModelMixin, generics.GenericAPIView):
         return self.list(request, *args, **kwargs)
 
 
+class BaseNoteManageView(APIView):
+    queryset = models.Note.objects.all()
+    serializer_class = NoteSerializerShort
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self):
+        return self.queryset.get(pk=self.kwargs.get('pk'))
+
+
 class CategoryListView(mixins.ListModelMixin, generics.GenericAPIView):
     queryset = models.Category.objects.all()
     serializer_class = CategorySerializer
@@ -40,6 +51,7 @@ class NoteListView(mixins.CreateModelMixin, mixins.ListModelMixin, generics.Gene
     queryset = models.Note.objects.all()
     serializer_class = NoteSerializerShort
     permission_classes = (IsAuthenticatedOrReadOnly,)
+    pagination_class = BasePagination
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
@@ -95,14 +107,7 @@ class NoteRetrieveView(mixins.RetrieveModelMixin,
             return NoteSerializerShort
 
 
-class LikeNoteView(APIView):
-    queryset = models.Note.objects.all()
-    serializer_class = NoteSerializerShort
-    permission_classes = (IsAuthenticated,)
-
-    def get_object(self):
-        return self.queryset.get(pk=self.kwargs.get('pk'))
-
+class LikeNoteView(BaseNoteManageView):
     def post(self, request, *args, **kwargs):
         obj = self.get_object()
         user = self.request.user
@@ -119,14 +124,7 @@ class LikeNoteView(APIView):
         return response.Response(data={"message": "ok"}, status=status.HTTP_200_OK)
 
 
-class BookmarkNoteView(APIView):
-    queryset = models.Note.objects.all()
-    serializer_class = NoteSerializerShort
-    permission_classes = (IsAuthenticated,)
-
-    def get_object(self):
-        return self.queryset.get(pk=self.kwargs.get('pk'))
-
+class BookmarkNoteView(BaseNoteManageView):
     def post(self, request, *args, **kwargs):
         obj = self.get_object()
         user = self.request.user
@@ -143,13 +141,10 @@ class BookmarkNoteView(APIView):
         return response.Response(data={"message": "ok"}, status=status.HTTP_200_OK)
 
 
-class CategoryNoteView(APIView):
+class CategoryNoteView(BaseNoteManageView):
     """
     POST/DELETE data must contains `category`: id of category
     """
-    queryset = models.Note.objects.all()
-    permission_classes = (IsAuthenticated,)
-
     def get_object(self):
         return self.queryset.get(pk=self.kwargs.get('pk'))
 
@@ -170,7 +165,7 @@ class CategoryNoteView(APIView):
         obj.save()
         return response.Response(data={"message": "ok"}, status=status.HTTP_200_OK)
 
-# TODO
+
 class SubscriptionView(APIView):
     serializer_class = users_serializers.UserSerializer
     permission_classes = (IsAuthenticated,)
@@ -199,6 +194,7 @@ class SubscriptionView(APIView):
                 'message': 'User is already a subscriber.'
             }, status=status.HTTP_400_BAD_REQUEST)
 
+        # TODO
         # subscription logic
         # user.subscription_to += days(30)
 
@@ -216,6 +212,8 @@ class UserBookmarksListView(BaseNoteListView):
 
 
 class UserNotesListView(BaseNoteListView):
+    pagination_class = BasePagination
+
     def get_queryset(self):
         return models.Note.objects.filter(author__email=self.request.user.email)
 
@@ -227,5 +225,17 @@ class PaymentNotificationView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
-        emails.PaymentNotificationMailFactory().create_notification_email(self.request.user).send()
-        return response.Response(data={"message": "ok"}, status=status.HTTP_200_OK)
+        try:
+            days = (self.request.user.subscription_to.replace(tzinfo=None) - datetime.datetime.now()).days
+        except AttributeError:
+            days = 0
+        if days > 0:
+            emails.PaymentNotificationMailFactory().create_notification_email(self.request.user).send()
+
+        data = {
+            "subscription_expires_in": days,
+            'subscription_to': self.request.user.subscription_to,
+            "has_expired": days <= 0
+        }
+
+        return response.Response(data=data, status=status.HTTP_200_OK)

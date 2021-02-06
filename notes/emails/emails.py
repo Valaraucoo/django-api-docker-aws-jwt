@@ -45,7 +45,11 @@ class PaymentNotificationMailFactory(base_emails.EmailFactoryInterface):
         return self.create_email()
 
     def get_context_data(self, *args, **kwargs) -> Dict[Any, Any]:
+        try:
+            days = (self.user.subscription_to.replace(tzinfo=None) - datetime.datetime.now()).days
+        except AttributeError:
+            days = 0
         return {
             'user': self.user,
-            'days': (datetime.datetime.now() - self.user.subscription_to.replace(tzinfo=None)).days
+            'days': days
         }
