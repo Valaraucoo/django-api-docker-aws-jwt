@@ -14,7 +14,9 @@ from users.emails.emails import WelcomeEmail
 from users.models import User
 
 
-class ManageUserView(generics.RetrieveUpdateAPIView):
+class ManageUserView(mixins.RetrieveModelMixin,
+                     mixins.UpdateModelMixin,
+                     generics.GenericAPIView):
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -23,6 +25,15 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
 
 
 class RetrieveUserProfileView(mixins.RetrieveModelMixin, generics.GenericAPIView):

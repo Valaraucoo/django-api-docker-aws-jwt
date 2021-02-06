@@ -2,7 +2,6 @@ import datetime
 
 from django.contrib.auth import models as auth_models
 from django.db import models
-from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
 
 from django.dispatch import receiver
