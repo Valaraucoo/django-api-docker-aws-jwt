@@ -60,7 +60,7 @@ class User(auth_models.AbstractUser):
             return False
         return self.subscription_to.replace(tzinfo=None) - datetime.datetime.now() > datetime.timedelta(days=0)
 
-    def get_image_url(self):
+    def get_image_url(self) -> str:
         return self.image.url
 
 
