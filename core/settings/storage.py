@@ -9,6 +9,8 @@ environ.Env.read_env()
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 USE_S3 = os.environ.get('USE_S3') or env('USE_S3')
+UPLOAD_FILES_DIR = 'uploads/'
+DEFAULT_PROFILE_IMAGE = 'defaults/user-profile.png'
 
 if USE_S3:
     STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
