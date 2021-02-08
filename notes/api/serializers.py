@@ -20,6 +20,26 @@ class NoteSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'content', 'categories', 'author',
                   'likes_count', 'created_at', 'updated_at')
 
+    def update(self, instance, validated_data):
+        try:
+            categories = validated_data.pop('categories')
+        except KeyError:
+            categories = None
+
+        if isinstance(categories, list):
+            for category in instance.categories.all():
+                instance.categories.remove(category)
+
+        if categories:
+            for category in categories:
+                category_obj = models.Category.objects.filter(name=category['name']).first()
+                if category_obj:
+                    instance.categories.add(category_obj)
+
+
+        super().update(instance, validated_data)
+        return instance
+
 
 class NoteSerializerShort(serializers.ModelSerializer):
     likes_count = serializers.IntegerField(read_only=True)

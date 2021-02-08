@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from rest_framework import permissions
 
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
 
 from .serializers import RegisterUserSerializer, UserSerializer, UserRetrieveSerializer
 from users.emails.emails import WelcomeEmail
@@ -77,5 +78,5 @@ class BlackListTokenView(APIView):
             token = RefreshToken(refresh_token)
             token.blacklist()
             return Response(data={'message': 'OK'}, status=status.HTTP_204_NO_CONTENT)
-        except Exception:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        except TokenError as error:
+            return Response(data={'error': str(error)}, status=status.HTTP_400_BAD_REQUEST)

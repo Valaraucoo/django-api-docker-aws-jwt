@@ -71,6 +71,10 @@ class NoteListView(mixins.CreateModelMixin, mixins.ListModelMixin, generics.Gene
         author = self.request.query_params.get('author')
         if author:
             qs = qs.filter(author__name=author)
+
+        title = self.request.query_params.get('title')
+        if title:
+            qs = qs.filter(title__icontains=title)
         return qs
 
 
@@ -105,6 +109,7 @@ class NoteRetrieveView(mixins.RetrieveModelMixin,
                 return NoteSerializer
         except AttributeError:
             return NoteSerializerShort
+        return NoteSerializerShort
 
 
 class LikeNoteView(BaseNoteManageView):

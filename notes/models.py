@@ -7,10 +7,11 @@ from users.models import User
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=128, unique=True)
+    name = models.CharField(max_length=128, unique=False)
 
     class Meta:
         ordering = ('name',)
+        verbose_name_plural = 'Categories'
 
 
 class Note(models.Model):
