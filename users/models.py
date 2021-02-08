@@ -12,7 +12,7 @@ from django_rest_passwordreset.signals import reset_password_token_created
 
 from users.emails.emails import ResetPasswordEmail
 from users import managers
-
+from subscriptions.models import UserSubscription
 
 GENDER_CHOICES = (
     ('male', _('Male')),
@@ -29,18 +29,25 @@ def get_file_path(instance, filename: str) -> str:
 class User(auth_models.AbstractUser):
     username = None
 
-    first_name = models.CharField(max_length=30, blank=True, verbose_name=_('First name'))
-    last_name = models.CharField(max_length=150, blank=True, verbose_name=_('Last name'))
-    image = models.ImageField(upload_to=get_file_path, default=settings.DEFAULT_PROFILE_IMAGE)
+    first_name = models.CharField(
+        max_length=30, blank=True, verbose_name=_('First name'))
+    last_name = models.CharField(
+        max_length=150, blank=True, verbose_name=_('Last name'))
+    image = models.ImageField(upload_to=get_file_path,
+                              default=settings.DEFAULT_PROFILE_IMAGE)
 
     email = models.EmailField(unique=True, verbose_name=_('Email address'))
-    phone = models.CharField(max_length=9, blank=True, verbose_name=_('Phone number'))
+    phone = models.CharField(max_length=9, blank=True,
+                             verbose_name=_('Phone number'))
     address = models.CharField(max_length=255, blank=True)
-    subscription_to = models.DateTimeField(null=True, blank=True)
+
+    subscription = models.OneToOneField(
+        UserSubscription, on_delete=models.CASCADE, null=True)
 
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    date_joined = models.DateTimeField(verbose_name=_('Date joined'), auto_now_add=True)
+    date_joined = models.DateTimeField(
+        verbose_name=_('Date joined'), auto_now_add=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ('first_name', 'last_name',)
@@ -53,12 +60,6 @@ class User(auth_models.AbstractUser):
     @property
     def full_username(self) -> str:
         return f"{self.first_name} {self.last_name} ({self.email})"
-
-    @property
-    def is_subscriber(self) -> bool:
-        if not self.subscription_to:
-            return False
-        return self.subscription_to.replace(tzinfo=None) - datetime.datetime.now() > datetime.timedelta(days=0)
 
     def get_image_url(self) -> str:
         return self.image.url
