@@ -20,6 +20,23 @@ class NoteSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'content', 'categories', 'author',
                   'likes_count', 'created_at', 'updated_at')
 
+    def create(self, validated_data):
+        print(validated_data)
+        try:
+            categories = validated_data.pop('categories')
+        except KeyError:
+            categories = None
+        instance = models.Note(**validated_data)
+        instance.save()
+
+        if categories:
+            for category in categories:
+                category_obj = models.Category.objects.filter(name=category['name']).first()
+                if category_obj:
+                    instance.categories.add(category_obj)
+        instance.save()
+        return instance
+
     def update(self, instance, validated_data):
         try:
             categories = validated_data.pop('categories')
