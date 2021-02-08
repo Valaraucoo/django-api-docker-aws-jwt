@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.db import transaction
 
 from rest_framework import status
 from rest_framework import generics
@@ -13,6 +14,8 @@ from rest_framework_simplejwt.exceptions import TokenError
 from .serializers import RegisterUserSerializer, UserSerializer, UserRetrieveSerializer
 from users.emails.emails import WelcomeEmail
 from users.models import User
+from subscriptions.lib.PaymentService import PaymentService
+from subscriptions.lib.StripeOperator import StripeOperator
 
 
 class ManageUserView(mixins.RetrieveModelMixin,
@@ -62,10 +65,12 @@ class CustomUserCreateView(APIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            user = serializer.save()
-            if user:
-                WelcomeEmail().create_welcome_email(user).send()
-                return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+            with transaction.atomic():
+                user = serializer.save()
+                PaymentService(StripeOperator()).createCustomer(user)
+                if user:
+                    WelcomeEmail().create_welcome_email(user).send()
+                    return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
