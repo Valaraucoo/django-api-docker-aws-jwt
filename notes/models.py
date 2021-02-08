@@ -59,10 +59,3 @@ class PaymentInvoice(models.Model):
 
     def __str__(self) -> str:
         return f'Invoice: {self.user}'
-
-    def clean(self):
-        super().clean()
-        if not self.user.address:
-            raise ValidationError({'user': 'User must have specified address'})
-        if not self.user.phone:
-            raise ValidationError({'user': 'User must have specified phone'})

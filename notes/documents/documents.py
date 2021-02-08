@@ -12,12 +12,12 @@ class PaymentInvoiceDocument(DocumentTemplateInterface):
     >>> PaymentInvoiceDocument(user, invoice).send()
     """
     template_name = "documents/notes/invoice.html"
-    filename = "Payment Invoice"
+    filename = "NoteneoPaymentInvoice.pdf"
 
     def get_context_data(self, *args, **kwargs) -> Dict[Any, Any]:
         return {
             'user': self.user,
-            'invoice': self.invoice
+            'invoice': self.invoice,
         }
 
     def send(self, *args, **kwargs) -> None:

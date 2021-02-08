@@ -27,7 +27,8 @@ class PaymentMailFactory(base_emails.EmailFactoryInterface):
     def get_context_data(self, *args, **kwargs) -> Dict[Any, Any]:
         return {
             'user': self.user,
-            'invoice': self.invoice
+            'invoice': self.invoice,
+            'datetime': datetime.datetime.now() + datetime.timedelta(days=30)
         }
 
 
