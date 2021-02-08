@@ -24,6 +24,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY') or env('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG') or env('DEBUG')
 ALLOWED_HOSTS = os.environ['ALLOWED_HOSTS'] or ["127.0.0.1", "localhost"]
+STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY')
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -33,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'users',
+    'subscriptions',
     'notes',
 
     'rest_framework',
@@ -184,7 +187,8 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER") or env('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD") or env('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_PASSWORD = os.environ.get(
+    "EMAIL_HOST_PASSWORD") or env('EMAIL_HOST_PASSWORD')
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
