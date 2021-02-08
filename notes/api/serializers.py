@@ -36,7 +36,6 @@ class NoteSerializer(serializers.ModelSerializer):
                 if category_obj:
                     instance.categories.add(category_obj)
 
-
         super().update(instance, validated_data)
         return instance
 
