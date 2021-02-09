@@ -27,3 +27,17 @@ class StripeOperator(PaymentOperator):
 
         subscription.subscribed_until = datetime.now() - timedelta(seconds=1)
         subscription.save()
+
+    def createCheckoutSession(self, user: User):
+        session = stripe.checkout.Session.create(
+            success_url='http://wozniak-dev-api.herokuapp.com/api/subscriptions/success/',
+            cancel_url='http://wozniak-dev-api.herokuapp.com/api/subscriptions/failed/',
+            payment_method_types=["card"],
+            line_items=[
+                {"price": 'price_1IIHf8KmDbuO5ZNDHGD75ySO', "quantity": 1}
+            ],
+            mode="subscription",
+            customer=user.subscription.client_id
+        )
+
+        return session.id
