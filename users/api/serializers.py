@@ -5,13 +5,15 @@ from users.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
+    client_id = serializers.CharField(read_only=True)
+
     class Meta:
         model = User
-        fields = ('pk', 'email', 'first_name', 'last_name', 'phone', 'date_joined',
-                  'address', 'is_subscriber', 'subscription_to', 'is_subscriber', 'image')
+        fields = ('pk', 'email', 'first_name', 'last_name', 'client_id', 'phone', 'date_joined',
+                  'address', 'is_subscriber', 'image',)
         extra_kwargs = {
+            'client_id': {'read_only': True},
             'is_subscriber': {'read_only': True},
-            'subscription_to': {'read_only': True},
         }
 
     def update(self, instance, validated_data) -> User:
@@ -25,8 +27,9 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserRetrieveSerializer(UserSerializer):
     class Meta(UserSerializer.Meta):
-        fields = ('pk', 'email', 'first_name', 'last_name', 'is_subscriber', 'date_joined', 'image')
+        fields = ('pk', 'email', 'first_name', 'last_name', 'is_subscriber', 'date_joined', 'image', 'client_id')
         extra_kwargs = {
+            'client_id': {'read_only': True},
             'is_subscriber': {'read_only': True},
         }
 
@@ -41,9 +44,10 @@ class RegisterUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'first_name', 'last_name', 'password',)
+        fields = ('email', 'first_name', 'last_name', 'password', 'client_id')
         extra_kwargs = {
             'password': {'write_only': True, 'min_length': 5},
+            'client_id': {'read_only': True}
         }
 
     def create(self, validated_data) -> User:

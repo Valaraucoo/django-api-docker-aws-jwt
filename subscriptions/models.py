@@ -1,5 +1,5 @@
 from django.db import models
-from datetime import datetime
+from django.utils import timezone
 
 
 class UserSubscription(models.Model):
@@ -9,4 +9,4 @@ class UserSubscription(models.Model):
 
     @property
     def is_premium(self) -> bool:
-        return self.subscribed_until and self.subscribed_until > datetime.now()
+        return bool(self.subscribed_until and self.subscribed_until > timezone.now())

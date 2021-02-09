@@ -78,7 +78,7 @@ class NoteListView(mixins.CreateModelMixin, mixins.ListModelMixin, generics.Gene
         return qs
 
     def get_serializer_class(self):
-        if not self.request.user.is_authenticated:
+        if self.request and not self.request.user.is_authenticated:
             return NoteSerializerShort
         return NoteSerializer
 
@@ -244,7 +244,7 @@ class PaymentNotificationView(APIView):
 
         data = {
             "subscription_expires_in": days,
-            'subscription_to': self.request.user.subscription_to,
+            'subscription': self.request.user.subscription,
             "has_expired": days <= 0
         }
 

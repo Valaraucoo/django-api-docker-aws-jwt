@@ -6,17 +6,21 @@ from django.template.loader import get_template
 from django.http import HttpResponse
 from xhtml2pdf import pisa
 
-from notes.models import PaymentInvoice
+from subscriptions.models import UserSubscription
 from users.models import User
 
 
 class DocumentTemplateInterface(abc.ABC):
+    """
+    DocumentTemplateInterface is used to generate invoice document and allows
+    you to send the generated e-mail via Django Mail API.
+    """
     template_name: str
     filename: str
 
-    def __init__(self, user: User, invoice: PaymentInvoice):
+    def __init__(self, user: User, subscription: UserSubscription):
         self.user = user
-        self.invoice = invoice
+        self.subscription = subscription
 
     @abc.abstractmethod
     def get_context_data(self, *args, **kwargs) -> Dict[Any, Any]:

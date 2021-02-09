@@ -22,7 +22,7 @@ class StripeOperator(PaymentOperator):
     def cancelSubscription(self, user: User):
         subscription = user.subscription
 
-        if (subscription.subscription_id):
+        if subscription.subscription_id:
             stripe.Subscription.delete(subscription.subscription_id)
 
         subscription.subscribed_until = datetime.now() - timedelta(seconds=1)

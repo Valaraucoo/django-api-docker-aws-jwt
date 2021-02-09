@@ -1,10 +1,10 @@
-import sys
-from pprint import pprint
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from datetime import datetime, timedelta
+
 from ..models import UserSubscription
+from ..documents import documents
 
 
 class StripeWebhook(APIView):
@@ -35,14 +35,16 @@ class StripeWebhook(APIView):
             if not subscription_id:
                 return Response(data={'message': 'Only subscription invoices are supported'}, status=status.HTTP_400_BAD_REQUEST)
 
-            subscription = UserSubscription.objects.filter(
-                subscription_id=subscription_id).first()
+            subscription = UserSubscription.objects.filter(subscription_id=subscription_id).first()
 
             if not subscription:
                 return Response(data={'message': 'Subscription was not found'}, status=status.HTTP_404_NOT_FOUND)
 
             subscription.subscribed_until = datetime.now() + timedelta(days=35)
             subscription.save()
+
+            document = documents.PaymentInvoiceDocument(user=subscription.user, subscription=subscription)
+            document.send()
 
             return Response(data={'message': 'User subscription refreshed'})
 
