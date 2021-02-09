@@ -24,8 +24,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY') or env('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG') or env('DEBUG')
 ALLOWED_HOSTS = os.environ['ALLOWED_HOSTS'] or ["127.0.0.1", "localhost"]
-STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY')
-STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
+STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY') or env('STRIPE_PUBLIC_KEY')
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY') or env('STRIPE_SECRET_KEY')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
