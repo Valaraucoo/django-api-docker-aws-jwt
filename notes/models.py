@@ -1,8 +1,6 @@
 import uuid
 
 from django.db import models
-from django.core.exceptions import ValidationError
-
 from users.models import User
 
 
@@ -59,3 +57,8 @@ class PaymentInvoice(models.Model):
 
     def __str__(self) -> str:
         return f'Invoice: {self.user}'
+
+
+class NoteView(models.Model):
+    user = models.ForeignKey('users.User', related_name='views', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)

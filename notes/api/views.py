@@ -49,8 +49,8 @@ class CategoryListView(mixins.ListModelMixin, generics.GenericAPIView):
 
 class NoteListView(mixins.CreateModelMixin, mixins.ListModelMixin, generics.GenericAPIView):
     queryset = models.Note.objects.all()
-    serializer_class = NoteSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    serializer_class = NoteSerializerShort
+    permission_classes = (IsAuthenticated,)
     pagination_class = BasePagination
 
     def get(self, request, *args, **kwargs):
@@ -77,11 +77,6 @@ class NoteListView(mixins.CreateModelMixin, mixins.ListModelMixin, generics.Gene
             qs = qs.filter(title__icontains=title)
         return qs
 
-    def get_serializer_class(self):
-        if self.request and not self.request.user.is_authenticated:
-            return NoteSerializerShort
-        return NoteSerializer
-
 
 class NoteRetrieveView(mixins.RetrieveModelMixin,
                        mixins.UpdateModelMixin,
@@ -92,6 +87,9 @@ class NoteRetrieveView(mixins.RetrieveModelMixin,
     permission_classes = (permissions.IsAuthorOrReadOnly,)
 
     def get(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj.author != self.request.user:
+            models.NoteView.objects.create(user=self.request.user)
         return self.retrieve(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
@@ -108,9 +106,7 @@ class NoteRetrieveView(mixins.RetrieveModelMixin,
 
     def get_serializer_class(self):
         try:
-            if not self.request.user.is_authenticated:
-                return NoteSerializerShort
-            if self.get_object().author == self.request.user or self.request.user.is_subscriber:
+            if self.request and self.get_object().author == self.request.user or self.request.user.has_access:
                 return NoteSerializer
         except AttributeError:
             return NoteSerializerShort
