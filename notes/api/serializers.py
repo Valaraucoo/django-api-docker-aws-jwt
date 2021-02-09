@@ -12,7 +12,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class NoteSerializer(serializers.ModelSerializer):
     likes_count = serializers.IntegerField(read_only=True)
-    categories = CategorySerializer(many=True)
+    categories = CategorySerializer(many=True, required=False)
     author = users_serializers.UserRetrieveSerializer(read_only=True)
 
     class Meta:
@@ -21,7 +21,6 @@ class NoteSerializer(serializers.ModelSerializer):
                   'likes_count', 'created_at', 'updated_at')
 
     def create(self, validated_data):
-        print(validated_data)
         try:
             categories = validated_data.pop('categories')
         except KeyError:

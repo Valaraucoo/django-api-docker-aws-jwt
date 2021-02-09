@@ -49,7 +49,7 @@ class CategoryListView(mixins.ListModelMixin, generics.GenericAPIView):
 
 class NoteListView(mixins.CreateModelMixin, mixins.ListModelMixin, generics.GenericAPIView):
     queryset = models.Note.objects.all()
-    serializer_class = NoteSerializerShort
+    serializer_class = NoteSerializer
     permission_classes = (IsAuthenticated,)
     pagination_class = BasePagination
 
@@ -76,6 +76,11 @@ class NoteListView(mixins.CreateModelMixin, mixins.ListModelMixin, generics.Gene
         if title:
             qs = qs.filter(title__icontains=title)
         return qs
+
+    def get_serializer_class(self):
+        if self.request and self.request.method in ['POST']:
+            return NoteSerializer
+        return NoteSerializerShort
 
 
 class NoteRetrieveView(mixins.RetrieveModelMixin,
@@ -106,7 +111,7 @@ class NoteRetrieveView(mixins.RetrieveModelMixin,
 
     def get_serializer_class(self):
         try:
-            if self.request and self.get_object().author == self.request.user or self.request.user.has_access:
+            if self.request and (self.get_object().author == self.request.user or self.request.user.has_access):
                 return NoteSerializer
         except AttributeError:
             return NoteSerializerShort
