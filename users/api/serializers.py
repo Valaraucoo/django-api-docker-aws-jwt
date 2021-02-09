@@ -10,10 +10,12 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('pk', 'email', 'first_name', 'last_name', 'client_id', 'phone', 'date_joined',
-                  'address', 'is_subscriber', 'image',)
+                  'address', 'is_subscriber', 'image', 'monthly_views', 'has_access')
         extra_kwargs = {
             'client_id': {'read_only': True},
             'is_subscriber': {'read_only': True},
+            'monthly_views': {'read_only': True},
+            'has_access': {'read_only': True}
         }
 
     def update(self, instance, validated_data) -> User:

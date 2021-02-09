@@ -5,6 +5,7 @@ import uuid
 from django.conf import settings
 from django.contrib.auth import models as auth_models
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from django.dispatch import receiver
@@ -62,6 +63,14 @@ class User(auth_models.AbstractUser):
     @property
     def client_id(self) -> str:
         return self.subscription.client_id
+
+    @property
+    def monthly_views(self) -> int:
+        return self.views.filter(created_at__gte=timezone.now()-datetime.timedelta(days=30)).count()
+
+    @property
+    def has_access(self) -> bool:
+        return self.monthly_views <= 3 or self.is_subscriber
 
     def get_image_url(self) -> str:
         return self.image.url
