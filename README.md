@@ -13,5 +13,9 @@ The technological stack of the system was selected taking into account our skill
   * `Heroku`
   * `AWS S3`
   
+  
 #### API specification
 You can find API documentation and all the necessary information [here](https://wozniak-dev-api.herokuapp.com/docs/)
+
+#### Application and features
+You can find more details about application and its features [here](https://github.com/SikoraKam/noteneo).
