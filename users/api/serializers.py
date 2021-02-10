@@ -10,10 +10,11 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('pk', 'email', 'first_name', 'last_name', 'client_id', 'phone', 'date_joined',
-                  'address', 'is_subscriber', 'image', 'monthly_views', 'has_access')
+                  'address', 'is_subscriber', 'is_subscription_cancelled', 'image', 'monthly_views', 'has_access')
         extra_kwargs = {
             'client_id': {'read_only': True},
             'is_subscriber': {'read_only': True},
+            'is_subscription_cancelled': {'read_only': True},
             'monthly_views': {'read_only': True},
             'has_access': {'read_only': True}
         }
@@ -29,10 +30,12 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserRetrieveSerializer(UserSerializer):
     class Meta(UserSerializer.Meta):
-        fields = ('pk', 'email', 'first_name', 'last_name', 'is_subscriber', 'date_joined', 'image', 'client_id')
+        fields = ('pk', 'email', 'first_name', 'last_name',
+                  'is_subscriber', 'is_subscription_cancelled', 'date_joined', 'image', 'client_id')
         extra_kwargs = {
             'client_id': {'read_only': True},
             'is_subscriber': {'read_only': True},
+            'is_subscription_cancelled': {'read_only': True}
         }
 
 
