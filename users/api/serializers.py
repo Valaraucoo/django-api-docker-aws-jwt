@@ -13,10 +13,10 @@ class UserSerializer(serializers.ModelSerializer):
                   'address', 'is_subscriber', 'is_subscription_cancelled', 'image', 'monthly_views', 'has_access')
         extra_kwargs = {
             'client_id': {'read_only': True},
-            'is_subscriber': {'read_only': True},
-            'is_subscription_cancelled': {'read_only': True},
-            'monthly_views': {'read_only': True},
-            'has_access': {'read_only': True}
+            'is_subscriber': {'read_only': True, 'default': False},
+            'is_subscription_cancelled': {'read_only': True, 'default': False},
+            'monthly_views': {'read_only': True, 'default': 0},
+            'has_access': {'read_only': True, 'default': False}
         }
 
     def update(self, instance, validated_data) -> User:
