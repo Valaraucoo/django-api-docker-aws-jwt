@@ -1,9 +1,11 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import permissions
 from subscriptions.lib.StripeOperator import StripeOperator
 from datetime import datetime, timedelta
 
+from ..lib.PaymentService import PaymentService
 from ..models import UserSubscription
 from ..documents import documents
 
@@ -55,5 +57,15 @@ class StripeWebhook(APIView):
 
 
 class StripeActions(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
     def get(self, request, format=None):
         return Response(data=StripeOperator().createCheckoutSession(request.user))
+
+
+class StripeSubscriptions(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def delete(self, request, format=None):
+        PaymentService(StripeOperator()).cancelSubscription(request.user)
+        return Response(data={'message': 'Subscription cancelled'})

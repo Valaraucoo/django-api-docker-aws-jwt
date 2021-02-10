@@ -25,7 +25,7 @@ class StripeOperator(PaymentOperator):
         if subscription.subscription_id:
             stripe.Subscription.delete(subscription.subscription_id)
 
-        subscription.subscribed_until = datetime.now() - timedelta(seconds=1)
+        subscription.subscription_id = None
         subscription.save()
 
     def createCheckoutSession(self, user: User):
