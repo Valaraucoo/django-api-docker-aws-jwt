@@ -23,7 +23,10 @@ class StripeOperator(PaymentOperator):
         subscription = user.subscription
 
         if subscription.subscription_id:
-            stripe.Subscription.delete(subscription.subscription_id)
+            try:
+                stripe.Subscription.delete(subscription.subscription_id)
+            except stripe.error.InvalidRequestError:
+                pass
 
         subscription.subscription_id = None
         subscription.save()
